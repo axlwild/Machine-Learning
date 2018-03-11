@@ -161,26 +161,44 @@ def id3(at_prin, atributos,nodo_elegido):
 		lista_at_aux=atrib_restantes 
 												##Implementar crear arbol bifurcacion de tipos
 		#Para cada tipo del atributo (ej. Rojo, Azul, Verde...)
+		aux=len(nodo_raiz.iden)
 		for i in nodo_raiz.tiposv:
 			print "valores de i: "+i
 			atrib_restantes=lista_at_aux
 			listaids=[] #Lista identificadores que hay que borrar 
 			#El identificador 0 no pertenece a ningun tipo
 			for j in range(1,len(nodo_raiz.iden)): 
-				print "J============"+str(j)
 				if i!=nodo_raiz.filas[j]:
 					listaids.append(j) #Los que hay que borrar
-			#print "Objetos pa' borrar: "+str(listaids)
+			print "Objetos pa' borrar: "+str(listaids)
+
+
+			print "ANTES DE BORRAR LOS OBJ RESTANTES SON: "
+			for j in range(len(atrib_restantes[0].iden)):
+				print atrib_restantes[0].iden[j]
+			print ":D"
+			print "NUMERO DE ATRIBUTOS DEL NODO CENTRAL "+str(len(nodo_raiz.iden))
+			print "NUMERO DE ATRIBUTOS DE NODO CUALQUIERA "+str(len(atrib_restantes[0].iden))
+			print "nodo raiz: "+str(nodo_raiz.iden)
+
 			#aqui borramos 
+			#k=# de atributos restantes
 			for k in range(len(atrib_restantes)):
-				for j in reversed(range(len(atrib_restantes))):
+				for j in reversed(listaids):
 					atrib_restantes[k].iden.pop(j)
-			print "La funcion se esta llevando a: "
-			for j in range(len(atrib_restantes)):
-				print atrib_restantes[k].iden[j]
-			print ":)"
-			id3(at_prin,atrib_restantes,nodo_raiz)	
-				
+					atrib_restantes[k].filas.pop(j)
+					
+			print "-------------La funcion se esta llevando a: ------------------"
+			#J debe de ser la cantidad de ejemplos restantes
+			for j in range(len(atrib_restantes[0].iden)):
+				print atrib_restantes[0].iden[j]
+			print "--------------------------------------------------------------"
+			id3(at_prin,atrib_restantes,nodo_raiz)
+			#Regresamos parametros originales
+			for k in range(len(atrib_restantes)):
+				for j in listaids:
+					atrib_restantes[k].iden.append(j)
+					atrib_restantes[k].filas.append(j)	
 		#id3(at_prin,atrib_restantes,nodo_raiz)
 			
 
@@ -208,8 +226,6 @@ for i in range(len(atributo1.filas)):
 	atributo2.iden.append(i)
 	atributo3.iden.append(i)
 	atributo4.iden.append(i)	
-
-print "iden"+str(atributo1.iden)
 #########EL AGENTE RECONOCE A LOS TIPOS DE VALORES DE CADA ATRIBUTO	
 #Obtener los tipos de valores de cada atributo
 atributo1.tiposv=obt_tiposv_atributos(atributo1.filas)
@@ -225,9 +241,3 @@ ent_inicial=entropia(cuenta_apariciones("si", atributo4.filas),cuenta_aparicione
 path=""
 
 id3(atrib[3],atrib,[])
-
-
-
-
-
-
