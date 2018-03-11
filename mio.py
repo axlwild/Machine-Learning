@@ -1,8 +1,11 @@
+
 import math
 class atributo():
-	nombre=""
-	filas=[]
-	tiposv=[]
+	def __init__(self):
+		self.nombre=""
+		self.filas=[]
+		self.tiposv=[]
+		self.iden=[]
 	
 def log2(numero):
 	return math.log(numero,2)
@@ -89,21 +92,44 @@ def atr_num(atributo):
 		return 1
 	elif atributo==atributo3.nombre:
 		return 2
+
+def imprime_tabla(la):
+	fi_temp=""
+	for i in range(0,len(la[0].filas)):
+		for atributo in la:
+			if i==0:
+				fi_temp= fi_temp+"\t     "+ atributo.filas[i]
+			else:
+				fi_temp= fi_temp+"\t\t"+ atributo.filas[i]
+		print fi_temp
+		fi_temp=""
+
+"""def print_lista(lista_atributos)
+	for k in range(len(lista_atributos.filas)):
+		for i in range(len(lista_atributos)):
+			print (lista_atributos[i],end="\t")
+		print("")
+"""
 """
 Se tienen como arreglos cada atributo
 at_prin: Atributo principal que determina si/no, +,-, etc.
 atributos: lista de atributos
-nom_nodo_prin: nombre del nodo principal actual
+nodo elegido: tiposv
+Si se elige un atributo, entonces todos los atributos tendran el mismo tipo del nodo elegido (mismas filas)
 """
-def id3(at_prin, atributos,nom_nodo_prin): 
-
+def id3(at_prin, atributos,nodo_elegido): 
 	#Si ninguna da "si" regresar -
 	if cuenta_apariciones("si", at_prin.filas)==0:
+		print "en "+nodo_elegido.nombre+" "+nodo_elegido.filas[1]+" Se selecciono 'no'"
 		return "-"
 	elif cuenta_apariciones("no", at_prin.filas)==0:
+		print "en "+nodo_elegido.nombre+" "+nodo_elegido.filas[1]+" Se selecciono 'si'"
 		return "+"
-	elif len(atributos)==1:
+	elif len(atributos)<=1:
+		print "en "+nodo_elegido.nombre+" "+nodo_elegido.filas[1]+" Se selecciono '?'"
 		return "?"
+	#elif len(atributos)==2:
+
 	else:
 		ent_inicial=entropia(cuenta_apariciones("si", at_prin.filas),cuenta_apariciones("no", at_prin.filas))
 		#total de filas con datos en la tabla
@@ -113,22 +139,51 @@ def id3(at_prin, atributos,nom_nodo_prin):
 		for i in range(len(atributos)-1):
 			ganancias_D.append(ganancia_D(D,atributos[i]))
 		for i in range(len(atributos)-1):
-			print "Ganancia (D"+nom_nodo_prin+","+atributos[i].nombre+") = " + str(ganancias_D[i])+"\n"
-		#Obteniendo nodo raiz
+			if nodo_elegido==[]:
+				print "Ganancia (D,"+atributos[i].nombre+") = " + str(ganancias_D[i])+"\n"
+			else:		
+				print "Ganancia (D"+nodo_elegido.filas[1]+","+atributos[i].nombre+") = " + str(ganancias_D[i])+"\n"
+		#Obteniendo nodo raiz (atributo ganador)
 		indice_raiz=ganancias_D.index(max(ganancias_D))
-		nodo_raiz=atributos[indice_raiz].nombre
-		atrib_restantes=[]
-		print "El nodo raiz es: "+ nodo_raiz +"\n"
-		for i in range(len(atributos)):
-			if i!=indice_raiz:
-				atrib_restantes.append(atributos[i])
-		id3(at_prin,atrib_restantes,nodo_raiz)
+		nodo_raiz=atributos[indice_raiz]
+		print "El nodo raiz es: "+ nodo_raiz.nombre +"\n"
+		#Quitamos de los atributos, al atributo ganador
+		atributos.pop(indice_raiz)	
+		atrib_restantes=atributos
+		
+
+
+		print "atributos restantes:"
+		for i in range(len(atrib_restantes)):
+			print atrib_restantes[i].nombre
+
+		#Salvo atributos restantes para ciclar cada tipo de atributo
+		lista_at_aux=atrib_restantes 
+												##Implementar crear arbol bifurcacion de tipos
+		#Para cada tipo del atributo (ej. Rojo, Azul, Verde...)
+		for i in nodo_raiz.tiposv:
+			print "valores de i: "+i
+			atrib_restantes=lista_at_aux
+			listaids=[] #Lista identificadores que hay que borrar 
+			#El identificador 0 no pertenece a ningun tipo
+			for j in range(1,len(nodo_raiz.iden)): 
+				print "J============"+str(j)
+				if i!=nodo_raiz.filas[j]:
+					listaids.append(j) #Los que hay que borrar
+			#print "Objetos pa' borrar: "+str(listaids)
+			#aqui borramos 
+			for k in range(len(atrib_restantes)):
+				for j in reversed(range(len(atrib_restantes))):
+					atrib_restantes[k].iden.pop(j)
+			print "La funcion se esta llevando a: "
+			for j in range(len(atrib_restantes)):
+				print atrib_restantes[k].iden[j]
+			print ":)"
+			id3(at_prin,atrib_restantes,nodo_raiz)	
+				
+		#id3(at_prin,atrib_restantes,nodo_raiz)
 			
-"""
-	nombre=""
-	filas=[]
-	tiposv=[]
-"""		
+
 #####SE CREA Y RELLENA LA TABLA
 atributo1=atributo()
 atributo1.filas=["ejemplares","<=4",">4",">4","<=4",">4",">4","<=4","<=4",">4"
@@ -141,11 +196,20 @@ atributo2.filas=["ventas","buenas","buenas","buenas","buenas","buenas","bajas","
 atributo3=atributo()
 atributo3.filas=["precio","<=150",">150","<=150",">150",">150",">150",">150",">150","<=150"
 	,"<=150","<=150","<=150",">150",">150","<=150"]
+
 	
 atributo4=atributo()
 atributo4.filas=["descuento","si","si","si","si","si","si","no","si","si"
 	,"no","no","no","si","si","no"]
 
+#Se les pone un numero de identificador, el 0 pertenece al nombre
+for i in range(len(atributo1.filas)):
+	atributo1.iden.append(i)
+	atributo2.iden.append(i)
+	atributo3.iden.append(i)
+	atributo4.iden.append(i)	
+
+print "iden"+str(atributo1.iden)
 #########EL AGENTE RECONOCE A LOS TIPOS DE VALORES DE CADA ATRIBUTO	
 #Obtener los tipos de valores de cada atributo
 atributo1.tiposv=obt_tiposv_atributos(atributo1.filas)
@@ -160,7 +224,7 @@ atrib=[atributo1,atributo2,atributo3,atributo4]
 ent_inicial=entropia(cuenta_apariciones("si", atributo4.filas),cuenta_apariciones("no", atributo4.filas))
 path=""
 
-id3(atrib[3],atrib,"")
+id3(atrib[3],atrib,[])
 
 
 
